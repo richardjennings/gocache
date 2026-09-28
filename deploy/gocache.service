@@ -1,0 +1,28 @@
+# gocache server under systemd. systemd creates a user for the service and
+# the data directory, /var/lib/gocache. Set the listen address with
+# "systemctl edit gocache":
+#
+#   [Service]
+#   Environment=GOCACHE_ADDR=HOST:5100
+#
+# The server must start after HOST exists. If another service creates HOST,
+# order gocache after that service in the same drop-in. For an address on the
+# Docker bridge:
+#
+#   [Unit]
+#   After=docker.service
+#   Requires=docker.service
+[Unit]
+Description=gocache server: a shared Go build cache
+After=network.target
+
+[Service]
+DynamicUser=yes
+StateDirectory=gocache
+Environment=GOCACHE_ADDR=127.0.0.1:5100
+ExecStart=/usr/local/bin/gocache server -addr ${GOCACHE_ADDR} -dir /var/lib/gocache
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
