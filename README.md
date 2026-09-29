@@ -48,6 +48,10 @@ build or test stage, not in a stage that you ship.
   `close` after `go list`, and it does not wait for the client. The client
   removes the export files shortly after `go list` exits, so tools that read
   them, such as staticcheck, fail.
+- `go list -compiled` does not work with gocache. With Go 1.25 it fails with
+  "loading compiled Go files from cache: reading srcfiles list: cache entry
+  not found". Tools that ask `golang.org/x/tools/go/packages` for compiled
+  files, such as deadcode, use it. Run such tools with an empty `GOCACHEPROG`.
 - The go command does not store linked binaries in a `GOCACHEPROG` cache. So
   a builder that starts empty links each main package again. `go test` does
   not link when it finds the test result in the cache.
